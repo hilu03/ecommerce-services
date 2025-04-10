@@ -15,7 +15,7 @@ import java.util.List;
 @Table(name = "categories")
 public class Category extends BaseEntityAudit {
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     String name;
 
     @Column(columnDefinition = "TEXT")
