@@ -1,6 +1,6 @@
 package com.rookies.ecommerce.controller;
 
-import com.rookies.ecommerce.dto.request.CategoryRequest;
+import com.rookies.ecommerce.dto.request.CreateUpdateCategoryRequest;
 import com.rookies.ecommerce.dto.response.APIResponse;
 import com.rookies.ecommerce.dto.response.MessageResponse;
 import com.rookies.ecommerce.service.category.CategoryService;
@@ -27,7 +27,7 @@ public class CategoryController {
     }
 
     @PostMapping()
-    public ResponseEntity<APIResponse> createCategory(@RequestBody @Valid CategoryRequest request) {
+    public ResponseEntity<APIResponse> createCategory(@RequestBody @Valid CreateUpdateCategoryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new APIResponse(MessageResponse.CREATED_SUCCESSFULLY,
                         categoryService.createCategory(request)));
@@ -47,7 +47,7 @@ public class CategoryController {
 
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse> updateCategory(@PathVariable String id,
-                                                      @RequestBody @Valid CategoryRequest request) {
+                                                      @RequestBody @Valid CreateUpdateCategoryRequest request) {
         return ResponseEntity.ok(new APIResponse(MessageResponse.UPDATED_SUCCESSFULLY,
                 categoryService.updateCategory(id, request)));
     }

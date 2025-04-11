@@ -1,6 +1,6 @@
 package com.rookies.ecommerce.service.category;
 
-import com.rookies.ecommerce.dto.request.CategoryRequest;
+import com.rookies.ecommerce.dto.request.CreateUpdateCategoryRequest;
 import com.rookies.ecommerce.entity.Category;
 import com.rookies.ecommerce.exception.AppException;
 import com.rookies.ecommerce.exception.ErrorCode;
@@ -22,7 +22,7 @@ public class CategoryServiceImpl implements CategoryService{
     CategoryRepository categoryRepository;
 
     @Override
-    public Category createCategory(CategoryRequest request) {
+    public Category createCategory(CreateUpdateCategoryRequest request) {
         return categoryRepository.save(
                 Category.builder()
                         .name(request.getName())
@@ -55,7 +55,7 @@ public class CategoryServiceImpl implements CategoryService{
     }
 
     @Override
-    public Category updateCategory(String id, CategoryRequest request) {
+    public Category updateCategory(String id, CreateUpdateCategoryRequest request) {
         Category category = categoryRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 

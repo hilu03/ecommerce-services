@@ -29,7 +29,7 @@ public class Product extends BaseEntityAudit {
     @Min(value = 0, message = "Quantity must be greater than or equal to 0")
     int availableQuantity;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     String imageUrl;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
@@ -38,7 +38,7 @@ public class Product extends BaseEntityAudit {
     @Column(nullable = false, columnDefinition = "boolean default false")
     boolean isDeleted;
 
-    @Column(nullable = false, columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT")
     String slug;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,

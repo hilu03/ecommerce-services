@@ -1,13 +1,13 @@
 package com.rookies.ecommerce.service.category;
 
-import com.rookies.ecommerce.dto.request.CategoryRequest;
+import com.rookies.ecommerce.dto.request.CreateUpdateCategoryRequest;
 import com.rookies.ecommerce.entity.Category;
 
 import java.util.List;
 
 public interface CategoryService {
 
-    Category createCategory(CategoryRequest request);
+    Category createCategory(CreateUpdateCategoryRequest request);
 
     Category getCategoryById(String id);
 
@@ -17,7 +17,7 @@ public interface CategoryService {
 
     List<Category> getDeletedCategories();
 
-    Category updateCategory(String id, CategoryRequest request);
+    Category updateCategory(String id, CreateUpdateCategoryRequest request);
 
     Category toggleCategory(String id);
 

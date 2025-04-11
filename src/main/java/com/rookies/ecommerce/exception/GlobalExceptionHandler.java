@@ -31,7 +31,7 @@ public class GlobalExceptionHandler {
     ResponseEntity<APIResponse> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
         log.error("Exception: {}", exception.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new APIResponse("Duplicated value!", null));
+                .body(new APIResponse("Invalid request data!", null));
     }
 
 }

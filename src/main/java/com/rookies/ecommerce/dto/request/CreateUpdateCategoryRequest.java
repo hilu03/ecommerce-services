@@ -8,7 +8,7 @@ import lombok.experimental.FieldDefaults;
 
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class CategoryRequest {
+public class CreateUpdateCategoryRequest {
 
     @NotNull(message = "Name cannot be null")
     @NotBlank(message = "Name cannot be blank")
