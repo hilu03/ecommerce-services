@@ -1,13 +1,16 @@
-package com.rookies.ecommerce.service.user;
+package com.rookies.ecommerce.service.authentication;
 
 import com.rookies.ecommerce.constant.RoleName;
 import com.rookies.ecommerce.dto.request.CreateUserRequest;
+import com.rookies.ecommerce.dto.request.LoginRequest;
+import com.rookies.ecommerce.dto.response.LoginResponse;
 import com.rookies.ecommerce.entity.Cart;
 import com.rookies.ecommerce.entity.Role;
 import com.rookies.ecommerce.entity.User;
 import com.rookies.ecommerce.exception.AppException;
 import com.rookies.ecommerce.exception.ErrorCode;
 import com.rookies.ecommerce.mapper.UserMapper;
+import com.rookies.ecommerce.repository.CartItemRepository;
 import com.rookies.ecommerce.repository.RoleRepository;
 import com.rookies.ecommerce.repository.UserRepository;
 import lombok.AccessLevel;
@@ -29,6 +32,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     PasswordEncoder passwordEncoder;
 
+    CartItemRepository cartItemRepository;
+
     @Override
     public void registerUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -43,5 +48,20 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                         .user(user)
                 .build());
         userRepository.save(user);
+    }
+
+    @Override
+    public LoginResponse login(LoginRequest request) {
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.LOGIN_FAILED));
+
+        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+            throw new AppException(ErrorCode.LOGIN_FAILED);
+        }
+
+        LoginResponse response = userMapper.toLoginResponse(user);
+        response.setCartItemCount(cartItemRepository.countByCart(user.getCart()));
+
+        return response;
     }
 }
