@@ -2,6 +2,7 @@ package com.rookies.ecommerce.service.user;
 
 import com.rookies.ecommerce.constant.RoleName;
 import com.rookies.ecommerce.dto.request.CreateUserRequest;
+import com.rookies.ecommerce.entity.Cart;
 import com.rookies.ecommerce.entity.Role;
 import com.rookies.ecommerce.entity.User;
 import com.rookies.ecommerce.exception.AppException;
@@ -38,6 +39,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role role = roleRepository.findByName(RoleName.USER_ROLE);
         user.setRole(role);
+        user.setCart(Cart.builder()
+                        .user(user)
+                .build());
         userRepository.save(user);
     }
 }
