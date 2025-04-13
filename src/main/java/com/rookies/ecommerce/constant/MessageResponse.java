@@ -1,4 +1,4 @@
-package com.rookies.ecommerce.dto.response;
+package com.rookies.ecommerce.constant;
 
 public class MessageResponse {
 

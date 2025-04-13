@@ -2,7 +2,7 @@ package com.rookies.ecommerce.controller;
 
 import com.rookies.ecommerce.dto.request.CreateUpdateProductRequest;
 import com.rookies.ecommerce.dto.response.APIResponse;
-import com.rookies.ecommerce.dto.response.MessageResponse;
+import com.rookies.ecommerce.constant.MessageResponse;
 import com.rookies.ecommerce.exception.AppException;
 import com.rookies.ecommerce.exception.ErrorCode;
 import com.rookies.ecommerce.service.product.ProductService;
