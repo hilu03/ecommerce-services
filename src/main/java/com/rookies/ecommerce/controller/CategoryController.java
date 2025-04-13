@@ -2,7 +2,7 @@ package com.rookies.ecommerce.controller;
 
 import com.rookies.ecommerce.dto.request.CreateUpdateCategoryRequest;
 import com.rookies.ecommerce.dto.response.APIResponse;
-import com.rookies.ecommerce.dto.response.MessageResponse;
+import com.rookies.ecommerce.constant.MessageResponse;
 import com.rookies.ecommerce.service.category.CategoryService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;

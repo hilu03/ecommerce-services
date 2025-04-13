@@ -30,6 +30,9 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     String password;
 
+    @Column(nullable = false, columnDefinition = "boolean default true")
+    boolean isActive;
+
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
             CascadeType.MERGE, CascadeType.REFRESH},
             fetch = FetchType.LAZY)

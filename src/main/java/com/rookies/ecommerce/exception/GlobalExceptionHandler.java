@@ -5,8 +5,13 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
+
+import java.util.Objects;
 
 @ControllerAdvice
 @Slf4j
@@ -30,8 +35,37 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     ResponseEntity<APIResponse> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
         log.error("Exception: {}", exception.getMessage());
+        if (exception.getMessage().contains("email")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new APIResponse(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage(), null));
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new APIResponse("Invalid request data!", null));
+    }
+
+    @ExceptionHandler(value = NoResourceFoundException.class)
+    ResponseEntity<APIResponse> handleNoResourceFoundException(NoResourceFoundException exception) {
+        log.error("Exception: {}", String.valueOf(exception));
+
+        return ResponseEntity.status(ErrorCode.RESOURCE_NOT_FOUND.getHttpStatusCode())
+                .body(new APIResponse(ErrorCode.RESOURCE_NOT_FOUND.getMessage(), exception.getMessage()));
+    }
+
+    @ExceptionHandler(value = HttpRequestMethodNotSupportedException.class)
+    ResponseEntity<APIResponse> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException exception) {
+        log.error("Exception: {}", String.valueOf(exception));
+
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(new APIResponse("Method not allowed", exception.getMessage()));
+    }
+
+    @ExceptionHandler(value = MethodArgumentNotValidException.class)
+    ResponseEntity<APIResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+        log.error("Exception: {}", String.valueOf(exception));
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new APIResponse("Invalid request data",
+                        Objects.requireNonNull(exception.getFieldError()).getDefaultMessage()));
     }
 
 }
