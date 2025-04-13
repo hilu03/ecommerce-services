@@ -11,14 +11,18 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class LoginRequest {
+public class UpdateUserInfo {
+
+    @NotNull(message = "First name cannot be null")
+    @NotBlank(message = "First name cannot be blank")
+    String firstName;
+
+    @NotNull(message = "Last name cannot be null")
+    @NotBlank(message = "Last name cannot be blank")
+    String lastName;
 
     @NotNull(message = "Email cannot be null")
     @Email(message = "Email is not valid")
     String email;
-
-    @NotNull(message = "Password cannot be null")
-    @NotBlank(message = "Password cannot be blank")
-    String password;
 
 }

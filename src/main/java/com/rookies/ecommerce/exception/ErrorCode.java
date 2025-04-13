@@ -16,6 +16,7 @@ public enum ErrorCode {
     INVALID_IMAGE_FILE("Invalid image file", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXISTS("Email already exists", HttpStatus.BAD_REQUEST),
     LOGIN_FAILED("Login failed", HttpStatus.UNAUTHORIZED),
+    INVALID_PASSWORD("Invalid password", HttpStatus.UNAUTHORIZED),
     ;
 
     ErrorCode(String message, HttpStatusCode httpStatusCode) {

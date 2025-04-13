@@ -55,6 +55,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.LOGIN_FAILED));
 
+        if (!user.isActive()) {
+            throw new AppException(ErrorCode.LOGIN_FAILED);
+        }
+
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
             throw new AppException(ErrorCode.LOGIN_FAILED);
         }

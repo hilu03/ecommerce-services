@@ -35,6 +35,10 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = DataIntegrityViolationException.class)
     ResponseEntity<APIResponse> handleDataIntegrityViolationException(DataIntegrityViolationException exception) {
         log.error("Exception: {}", exception.getMessage());
+        if (exception.getMessage().contains("email")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new APIResponse(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage(), null));
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new APIResponse("Invalid request data!", null));
     }
