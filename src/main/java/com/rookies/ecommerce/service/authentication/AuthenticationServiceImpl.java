@@ -4,9 +4,7 @@ import com.rookies.ecommerce.constant.RoleName;
 import com.rookies.ecommerce.dto.request.CreateUserRequest;
 import com.rookies.ecommerce.dto.request.LoginRequest;
 import com.rookies.ecommerce.dto.response.LoginResponse;
-import com.rookies.ecommerce.entity.Cart;
-import com.rookies.ecommerce.entity.Role;
-import com.rookies.ecommerce.entity.User;
+import com.rookies.ecommerce.entity.*;
 import com.rookies.ecommerce.exception.AppException;
 import com.rookies.ecommerce.exception.ErrorCode;
 import com.rookies.ecommerce.mapper.UserMapper;
@@ -41,12 +39,18 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         User user = userMapper.toUser(request);
+        UserProfile userProfile = userMapper.toUserProfile(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role role = roleRepository.findByName(RoleName.USER_ROLE);
         user.setRole(role);
-//        user.setCart(Cart.builder()
-//                        .user(user)
-//                .build());
+        user.setUserProfile(userProfile);
+        Cart cart = new Cart();
+        Customer customer = Customer.builder()
+                .user(user)
+                .cart(cart)
+                .build();
+        cart.setCustomer(customer);
+        user.setCustomer(customer);
         userRepository.save(user);
     }
 
@@ -64,7 +68,12 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         LoginResponse response = userMapper.toLoginResponse(user);
-//        response.setCartItemCount(cartItemRepository.countByCart(user.getCart()));
+        UserProfile userProfile = user.getUserProfile();
+        response.setFirstName(userProfile.getFirstName());
+        response.setLastName(userProfile.getLastName());
+        if (user.getRole().getName().equals(RoleName.USER_ROLE)) {
+            response.setCartItemCount(cartItemRepository.countByCart(user.getCustomer().getCart()));
+        }
 
         return response;
     }

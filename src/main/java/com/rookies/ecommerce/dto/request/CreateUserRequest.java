@@ -29,4 +29,6 @@ public class CreateUserRequest {
     @NotBlank(message = "Password cannot be blank")
     String password;
 
+    String phoneNumber;
+
 }

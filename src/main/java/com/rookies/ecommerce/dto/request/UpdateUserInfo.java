@@ -25,4 +25,8 @@ public class UpdateUserInfo {
     @Email(message = "Email is not valid")
     String email;
 
+    String phoneNumber;
+
+    String address;
+
 }

@@ -12,17 +12,11 @@ import java.time.Instant;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserDTO {
 
-    String firstName;
-
-    String lastName;
+    UserProfileDTO userProfile;
 
     String email;
 
     String role;
-
-    Instant createdAt;
-
-    Instant updatedAt;
 
     boolean active;
 

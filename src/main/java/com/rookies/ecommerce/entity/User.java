@@ -6,6 +6,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.SuperBuilder;
 
+import java.time.Instant;
 import java.util.List;
 
 @Table(name = "users")
@@ -34,7 +35,7 @@ public class User extends BaseEntity {
     @JoinColumn(name = "role_id")
     Role role;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "profile_id")
     UserProfile userProfile;
 
@@ -42,5 +43,10 @@ public class User extends BaseEntity {
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
     Customer customer;
+
+    @PrePersist
+    protected void onCreate() {
+        this.isActive = true;
+    }
 
 }
