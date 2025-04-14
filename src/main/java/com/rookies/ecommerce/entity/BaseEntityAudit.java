@@ -1,27 +1,26 @@
 package com.rookies.ecommerce.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
+
+import java.util.UUID;
 
 @MappedSuperclass
 @Getter
 @Setter
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@SuperBuilder
+@NoArgsConstructor
 public abstract class BaseEntityAudit extends BaseEntity {
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
-            CascadeType.MERGE, CascadeType.REFRESH},
-            fetch = FetchType.LAZY)
-    @JoinColumn(name = "created_by")
-    User createdBy;
+    @Column(name = "created_by")
+    UUID createdBy;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
-            CascadeType.MERGE, CascadeType.REFRESH},
-            fetch = FetchType.LAZY)
-    @JoinColumn(name = "modified_by")
-    User modifiedBy;
+    @Column(name = "modified_by")
+    UUID modifiedBy;
 
 }

@@ -20,23 +20,11 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Order extends BaseEntityAudit {
 
-    @Column(nullable = false)
-    String receiver;
-
-    @Column(nullable = false)
-    String phoneNumber;
-
-    @Column(nullable = false)
-    String city;
-
-    @Column(nullable = false)
-    String district;
-
-    @Column(nullable = false)
-    String ward;
-
-    @Column(nullable = false)
-    String address;
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
+            CascadeType.MERGE, CascadeType.REFRESH},
+            fetch = FetchType.LAZY)
+    @JoinColumn(name = "address_id")
+    ShippingAddress address;
 
     @Column(nullable = false, precision = 10, scale = 0)
     BigDecimal totalPrice;
@@ -44,8 +32,8 @@ public class Order extends BaseEntityAudit {
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
             CascadeType.MERGE, CascadeType.REFRESH},
             fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    User user;
+    @JoinColumn(name = "customer_id")
+    Customer customer;
 
     @OneToMany(mappedBy = "order",
             cascade = {CascadeType.PERSIST, CascadeType.DETACH,

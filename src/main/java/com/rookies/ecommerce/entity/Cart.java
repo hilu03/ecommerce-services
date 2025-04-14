@@ -16,9 +16,9 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Cart extends BaseEntity{
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    User user;
+    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinColumn(name = "customer_id")
+    Customer customer;
 
     @OneToMany(mappedBy = "cart",
             cascade = {CascadeType.PERSIST, CascadeType.DETACH,

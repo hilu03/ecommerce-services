@@ -33,9 +33,6 @@ public class Product extends BaseEntityAudit {
     String imageUrl;
 
     @Column(nullable = false, columnDefinition = "boolean default false")
-    boolean isFeatured;
-
-    @Column(nullable = false, columnDefinition = "boolean default false")
     boolean isDeleted;
 
     @Column(columnDefinition = "TEXT")
@@ -46,5 +43,10 @@ public class Product extends BaseEntityAudit {
             fetch = FetchType.LAZY)
     @JoinColumn(name = "category_id")
     Category category;
+
+    @OneToOne(mappedBy = "product",
+            fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL)
+    FeaturedProduct featuredProduct;
 
 }
