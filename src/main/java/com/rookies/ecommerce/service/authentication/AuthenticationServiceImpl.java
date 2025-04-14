@@ -44,9 +44,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Role role = roleRepository.findByName(RoleName.USER_ROLE);
         user.setRole(role);
-        user.setCart(Cart.builder()
-                        .user(user)
-                .build());
+//        user.setCart(Cart.builder()
+//                        .user(user)
+//                .build());
         userRepository.save(user);
     }
 
@@ -64,7 +64,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         LoginResponse response = userMapper.toLoginResponse(user);
-        response.setCartItemCount(cartItemRepository.countByCart(user.getCart()));
+//        response.setCartItemCount(cartItemRepository.countByCart(user.getCart()));
 
         return response;
     }

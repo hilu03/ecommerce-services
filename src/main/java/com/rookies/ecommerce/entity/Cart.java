@@ -17,8 +17,8 @@ import java.util.List;
 public class Cart extends BaseEntity{
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
-    User user;
+    @JoinColumn(name = "customer_id")
+    Customer customer;
 
     @OneToMany(mappedBy = "cart",
             cascade = {CascadeType.PERSIST, CascadeType.DETACH,

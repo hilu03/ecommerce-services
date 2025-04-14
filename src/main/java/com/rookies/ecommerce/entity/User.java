@@ -4,24 +4,19 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 @Table(name = "users")
 @Setter
 @Getter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User extends BaseEntity {
-
-    @Column(nullable = false)
-    String firstName;
-
-    @Column(nullable = false)
-    String lastName;
 
     @Column(unique = true)
     @Email
@@ -39,21 +34,13 @@ public class User extends BaseEntity {
     @JoinColumn(name = "role_id")
     Role role;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "profile_id")
+    UserProfile userProfile;
+
     @OneToOne(mappedBy = "user",
             fetch = FetchType.LAZY,
             cascade = CascadeType.ALL)
-    Cart cart;
-
-    @OneToMany(mappedBy = "user",
-            cascade = {CascadeType.PERSIST, CascadeType.DETACH,
-                    CascadeType.MERGE, CascadeType.REFRESH},
-            fetch = FetchType.LAZY)
-    List<Review> reviews;
-
-    @OneToMany(mappedBy = "user",
-            cascade = {CascadeType.PERSIST, CascadeType.DETACH,
-                    CascadeType.MERGE, CascadeType.REFRESH},
-            fetch = FetchType.LAZY)
-    List<Order> orders;
+    Customer customer;
 
 }

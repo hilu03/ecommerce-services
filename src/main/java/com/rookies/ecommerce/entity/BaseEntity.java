@@ -2,7 +2,9 @@ package com.rookies.ecommerce.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 import java.sql.Timestamp;
 import java.time.Instant;
@@ -11,6 +13,8 @@ import java.util.UUID;
 @MappedSuperclass
 @Data
 @FieldDefaults(level = lombok.AccessLevel.PRIVATE)
+@SuperBuilder
+@NoArgsConstructor
 public abstract class BaseEntity {
 
     @Id
