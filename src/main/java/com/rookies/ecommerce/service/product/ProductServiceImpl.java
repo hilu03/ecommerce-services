@@ -1,13 +1,18 @@
 package com.rookies.ecommerce.service.product;
 
+import com.rookies.ecommerce.dto.request.CreateFeaturedProduct;
 import com.rookies.ecommerce.dto.request.CreateUpdateProductRequest;
+import com.rookies.ecommerce.dto.request.UpdateFeaturedProduct;
+import com.rookies.ecommerce.dto.response.FeaturedProductResponse;
 import com.rookies.ecommerce.dto.response.ProductResponse;
 import com.rookies.ecommerce.dto.response.ProductDetailResponse;
 import com.rookies.ecommerce.entity.Category;
+import com.rookies.ecommerce.entity.FeaturedProduct;
 import com.rookies.ecommerce.entity.Product;
 import com.rookies.ecommerce.exception.AppException;
 import com.rookies.ecommerce.exception.ErrorCode;
 import com.rookies.ecommerce.mapper.ProductMapper;
+import com.rookies.ecommerce.repository.FeaturedProductRepository;
 import com.rookies.ecommerce.repository.ProductRepository;
 import com.rookies.ecommerce.service.category.CategoryService;
 import com.rookies.ecommerce.service.upload.UploadService;
@@ -23,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.UUID;
 
 @Service
@@ -37,6 +43,8 @@ public class ProductServiceImpl implements ProductService {
     ProductMapper productMapper;
 
     UploadService uploadService;
+
+    FeaturedProductRepository featuredProductRepository;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -109,4 +117,56 @@ public class ProductServiceImpl implements ProductService {
 
         return productMapper.toProductDetail(product);
     }
+
+    @Override
+    public void addFeaturedProduct(CreateFeaturedProduct request) {
+        Product product = productRepository.findById(request.getProductId())
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        FeaturedProduct featuredProduct = productMapper.toFeaturedProduct(request);
+        featuredProduct.setProduct(product);
+        featuredProductRepository.save(featuredProduct);
+    }
+
+    @Override
+    public void updateFeatureProduct(UUID id, UpdateFeaturedProduct request) {
+        FeaturedProduct featuredProduct = featuredProductRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        productMapper.updateFeaturedProduct(request, featuredProduct);
+        featuredProductRepository.save(featuredProduct);
+    }
+
+    @Override
+    public Page<FeaturedProductResponse> getAllFeaturedProduct(int page, int size, String sortBy, String sortDir) {
+        return featuredProductRepository
+                .findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy)))
+                .map(productMapper::toFeaturedProductResponse);
+    }
+
+    @Override
+    public void deleteFeaturedProduct(String id) {
+        FeaturedProduct featuredProduct = featuredProductRepository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+
+        featuredProductRepository.delete(featuredProduct);
+    }
+
+    @Override
+    public FeaturedProductResponse getFeaturedProductById(UUID id) {
+        FeaturedProduct featuredProduct = featuredProductRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        return productMapper.toFeaturedProductResponse(featuredProduct);
+    }
+
+    @Override
+    public Page<FeaturedProductResponse> getActiveFeaturedProducts(int page, int size, String sortBy, String sortDir) {
+        Date now = new Date();
+        return featuredProductRepository.findByStartDateBeforeAndEndDateAfter(now, now,
+                PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy)))
+                .map(productMapper::toFeaturedProductResponse);
+    }
+
+
 }

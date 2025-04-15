@@ -1,6 +1,8 @@
 package com.rookies.ecommerce.controller;
 
+import com.rookies.ecommerce.dto.request.CreateFeaturedProduct;
 import com.rookies.ecommerce.dto.request.CreateUpdateProductRequest;
+import com.rookies.ecommerce.dto.request.UpdateFeaturedProduct;
 import com.rookies.ecommerce.dto.response.APIResponse;
 import com.rookies.ecommerce.constant.MessageResponse;
 import com.rookies.ecommerce.exception.AppException;
@@ -17,6 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
@@ -114,6 +117,49 @@ public class ProductController {
     public ResponseEntity<APIResponse> toggleProductStatus(@PathVariable String id) {
         return ResponseEntity.ok(new APIResponse(MessageResponse.UPDATED_SUCCESSFULLY,
                 productService.toggleProductStatus(id)));
+    }
+
+    @PostMapping("/feature")
+    public ResponseEntity<APIResponse> addFeaturedProduct(@RequestBody @Valid CreateFeaturedProduct request) {
+        productService.addFeaturedProduct(request);
+        return ResponseEntity.ok(new APIResponse(MessageResponse.CREATED_SUCCESSFULLY, null));
+    }
+
+    @PutMapping("/feature/{id}")
+    public ResponseEntity<APIResponse> updateFeaturedProduct(@PathVariable String id,
+                                                             @RequestBody @Valid UpdateFeaturedProduct request) {
+        productService.updateFeatureProduct(UUID.fromString(id), request);
+        return ResponseEntity.ok(new APIResponse(MessageResponse.CREATED_SUCCESSFULLY, null));
+    }
+
+    @GetMapping("/feature")
+    public ResponseEntity<APIResponse> getAllFeaturedProduct(@RequestParam(defaultValue = "0") int page,
+                                                         @RequestParam(defaultValue = "10") int size,
+                                                         @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                         @RequestParam(defaultValue = "asc") String sortDir) {
+        return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
+                productService.getAllFeaturedProduct(page, size, sortBy, sortDir)));
+    }
+
+    @DeleteMapping("/feature/{id}")
+    public ResponseEntity<APIResponse> deleteFeaturedProduct(@PathVariable String id) {
+        productService.deleteFeaturedProduct(id);
+        return ResponseEntity.ok(new APIResponse(MessageResponse.SUCCESS_REQUEST, null));
+    }
+
+    @GetMapping("/feature/{id}")
+    public ResponseEntity<APIResponse> getFeaturedProductById(@PathVariable UUID id) {
+        return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
+                productService.getFeaturedProductById(id)));
+    }
+
+    @GetMapping("/feature/active")
+    public ResponseEntity<APIResponse> getActiveFeaturedProduct(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size,
+                                                             @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                             @RequestParam(defaultValue = "asc") String sortDir) {
+        return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
+                productService.getActiveFeaturedProducts(page, size, sortBy, sortDir)));
     }
 
 }
