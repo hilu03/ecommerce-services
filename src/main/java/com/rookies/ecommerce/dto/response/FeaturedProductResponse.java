@@ -3,23 +3,24 @@ package com.rookies.ecommerce.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.sql.Date;
+import java.util.UUID;
+
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductResponse {
+public class FeaturedProductResponse {
 
-    String id;
+    UUID id;
 
-    String name;
+    Date startDate;
 
-    String imageUrl;
+    Date endDate;
 
-    int availableQuantity;
+    String description;
 
-    double price;
-
-    String slug;
+    ProductResponse product;
 
 }

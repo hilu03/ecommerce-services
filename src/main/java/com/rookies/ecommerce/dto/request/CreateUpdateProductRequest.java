@@ -27,8 +27,6 @@ public class CreateUpdateProductRequest {
     @Min(value = 0, message = "Quantity must be greater than or equal to 0")
     int availableQuantity;
 
-    boolean isFeatured;
-
     @NotNull
     String categoryId;
 

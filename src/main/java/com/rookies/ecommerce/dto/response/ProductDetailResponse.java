@@ -18,8 +18,6 @@ public class ProductDetailResponse {
 
     String imageUrl;
 
-    boolean isFeatured;
-
     int availableQuantity;
 
     double price;

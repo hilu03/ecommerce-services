@@ -4,14 +4,15 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.sql.Date;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "featured_products")
+@Table(name = "featured_products",
+        uniqueConstraints = { @UniqueConstraint(columnNames = { "product_id", "startDate", "endDate" }) })
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class FeaturedProduct extends BaseEntityAudit {
 
