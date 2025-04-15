@@ -6,6 +6,7 @@ import com.rookies.ecommerce.dto.request.UpdateFeaturedProduct;
 import com.rookies.ecommerce.dto.response.FeaturedProductResponse;
 import com.rookies.ecommerce.dto.response.ProductResponse;
 import com.rookies.ecommerce.dto.response.ProductDetailResponse;
+import com.rookies.ecommerce.entity.Product;
 import org.springframework.data.domain.Page;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -41,4 +42,6 @@ public interface ProductService {
     FeaturedProductResponse getFeaturedProductById(UUID id);
 
     Page<FeaturedProductResponse> getActiveFeaturedProducts(int page, int size, String sortBy, String sortDir);
+
+    Product getProductEntityById(UUID id);
 }

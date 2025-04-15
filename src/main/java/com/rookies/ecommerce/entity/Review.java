@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "reviews")
+@Table(name = "reviews", uniqueConstraints = { @UniqueConstraint(columnNames = { "customer_id", "product_id" }) })
 @Getter
 @Setter
 @Builder

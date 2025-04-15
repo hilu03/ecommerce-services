@@ -1,0 +1,104 @@
+package com.rookies.ecommerce.service.review;
+
+import com.rookies.ecommerce.dto.request.CreateReviewRequest;
+import com.rookies.ecommerce.dto.request.UpdateReviewRequest;
+import com.rookies.ecommerce.dto.response.*;
+import com.rookies.ecommerce.entity.Product;
+import com.rookies.ecommerce.entity.Review;
+import com.rookies.ecommerce.entity.User;
+import com.rookies.ecommerce.exception.AppException;
+import com.rookies.ecommerce.exception.ErrorCode;
+import com.rookies.ecommerce.mapper.ReviewMapper;
+import com.rookies.ecommerce.repository.ReviewRepository;
+import com.rookies.ecommerce.service.product.ProductService;
+import com.rookies.ecommerce.service.user.UserService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
+
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+public class ReviewServiceImpl implements ReviewService {
+
+    ReviewRepository reviewRepository;
+
+    ReviewMapper reviewMapper;
+
+    UserService userService;
+
+    ProductService productService;
+
+    @Override
+    public void createReview(String userId, CreateReviewRequest request) {
+        User user = userService.getUserEntityById(UUID.fromString(userId));
+        Product product = productService.getProductEntityById(request.getProductId());
+        Review review = reviewMapper.toReview(request);
+
+        review.setProduct(product);
+        review.setCustomer(user.getCustomer());
+        reviewRepository.save(review);
+    }
+
+    @Override
+    public void updateReview(String reviewId, UpdateReviewRequest request) {
+        Review review = reviewRepository.findById(UUID.fromString(reviewId))
+                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        reviewMapper.updateReview(request, review);
+        reviewRepository.save(review);
+    }
+
+    @Override
+    public Page<ReviewResponse> getReviewByProductId(UUID productId, int page, int size, String sortBy, String sortDir) {
+        Product product = productService.getProductEntityById(productId);
+        return reviewRepository.findAllByProduct(product,
+                        PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy)))
+                .map(reviewMapper::toReviewResponse);
+    }
+
+    @Override
+    public ReviewStatistic getReviewStatisticByProductId(UUID id) {
+        Product product = productService.getProductEntityById(id);
+        long count = reviewRepository.countByProduct(product);
+        return ReviewStatistic.builder()
+                .count(count)
+                .averageRating(count != 0 ? reviewRepository.getAvgRatingByProduct(product) : 0)
+                .build();
+    }
+
+    @Override
+    public void deleteReview(UUID id) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
+        reviewRepository.delete(review);
+    }
+
+    @Override
+    public ReviewDetailResponse getReviewDetailById(UUID id) {
+        Review review = reviewRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
+
+        return reviewMapper.toReviewDetail(review);
+    }
+
+    @Override
+    public Page<UserReviewResponse> getReviewByUser(UUID userId, int page, int size, String sortBy, String sortDir) {
+        User user = userService.getUserEntityById(userId);
+        return reviewRepository.findAllByCustomer(user.getCustomer(),
+                        PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy)))
+                .map(reviewMapper::toUserReviewResponse);
+    }
+
+    @Override
+    public Page<AllReviewResponse> getAllReview(int page, int size, String sortBy, String sortDir) {
+        return reviewRepository.findAll(PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy)))
+                .map(reviewMapper::toAllReviewResponse);
+    }
+}

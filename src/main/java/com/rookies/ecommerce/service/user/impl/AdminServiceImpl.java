@@ -1,6 +1,6 @@
 package com.rookies.ecommerce.service.user.impl;
 
-import com.rookies.ecommerce.constant.RoleName;
+import com.rookies.ecommerce.enums.RoleName;
 import com.rookies.ecommerce.dto.response.UserDTO;
 import com.rookies.ecommerce.entity.Role;
 import com.rookies.ecommerce.entity.User;
@@ -33,7 +33,7 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public Page<UserDTO> getAllUsersByStatus(boolean isActive, int page, int size, String sortBy, String sortDir) {
-        Role role = roleRepository.findByName(RoleName.USER_ROLE);
+        Role role = roleRepository.findByName(RoleName.USER_ROLE.getName());
         Page<User> users = userRepository.findAllByRoleAndIsActive(role, isActive, PageRequest.of(page, size,
                 Sort.by(Sort.Direction.fromString(sortDir), sortBy)));
         return users.map(userMapper::toUserDTO);

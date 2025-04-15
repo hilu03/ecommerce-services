@@ -168,5 +168,11 @@ public class ProductServiceImpl implements ProductService {
                 .map(productMapper::toFeaturedProductResponse);
     }
 
+    @Override
+    public Product getProductEntityById(UUID id) {
+        return productRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
+    }
+
 
 }

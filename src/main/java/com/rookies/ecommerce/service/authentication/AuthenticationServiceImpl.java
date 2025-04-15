@@ -1,6 +1,6 @@
 package com.rookies.ecommerce.service.authentication;
 
-import com.rookies.ecommerce.constant.RoleName;
+import com.rookies.ecommerce.enums.RoleName;
 import com.rookies.ecommerce.dto.request.CreateUserRequest;
 import com.rookies.ecommerce.dto.request.LoginRequest;
 import com.rookies.ecommerce.dto.response.LoginResponse;
@@ -41,7 +41,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         User user = userMapper.toUser(request);
         UserProfile userProfile = userMapper.toUserProfile(request);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        Role role = roleRepository.findByName(RoleName.USER_ROLE);
+        Role role = roleRepository.findByName(RoleName.USER_ROLE.getName());
         user.setRole(role);
         user.setUserProfile(userProfile);
         Cart cart = new Cart();
@@ -71,7 +71,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         UserProfile userProfile = user.getUserProfile();
         response.setFirstName(userProfile.getFirstName());
         response.setLastName(userProfile.getLastName());
-        if (user.getRole().getName().equals(RoleName.USER_ROLE)) {
+        if (user.getRole().getName().equals(RoleName.USER_ROLE.getName())) {
             response.setCartItemCount(cartItemRepository.countByCart(user.getCustomer().getCart()));
         }
 
