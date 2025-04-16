@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -23,6 +24,7 @@ public class ReviewController {
 
     ReviewService reviewService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<APIResponse> getAllReview(@RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "10") int size,
@@ -64,6 +66,7 @@ public class ReviewController {
                 reviewService.getReviewByProductId(id, page, size, sortBy, sortDir)));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping()
     public ResponseEntity<APIResponse> createReview(@RequestBody @Valid CreateReviewRequest request,
                                                     @RequestParam String userId) {
@@ -72,6 +75,7 @@ public class ReviewController {
                 .body(new APIResponse(MessageResponse.CREATED_SUCCESSFULLY, null));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse> updateReview(@RequestBody @Valid UpdateReviewRequest request,
                                                     @PathVariable String id) {

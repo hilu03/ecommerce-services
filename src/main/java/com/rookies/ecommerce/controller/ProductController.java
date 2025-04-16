@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -38,6 +39,7 @@ public class ProductController {
                 productService.getProductsByIsDeleted(false, page, size, sortBy, sortDir)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/hidden")
     public ResponseEntity<APIResponse> getHiddenProducts(@RequestParam(defaultValue = "0") int page,
                                                          @RequestParam(defaultValue = "10") int size,
@@ -69,6 +71,7 @@ public class ProductController {
                 productService.getProductsByCategoryIdAndIsDeleted(categoryId, false, page, size, sortBy, sortDir)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public ResponseEntity<APIResponse> createProduct(@RequestPart @Valid CreateUpdateProductRequest productInfo,
                                                      @RequestPart MultipartFile imageFile) throws IOException {
@@ -94,6 +97,7 @@ public class ProductController {
                 .body(new APIResponse(MessageResponse.CREATED_SUCCESSFULLY, null));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse> updateProduct(@PathVariable String id,
                                                      @RequestPart @Valid CreateUpdateProductRequest productInfo,
@@ -113,18 +117,21 @@ public class ProductController {
         return ResponseEntity.ok(new APIResponse(MessageResponse.UPDATED_SUCCESSFULLY, null));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/toggle")
     public ResponseEntity<APIResponse> toggleProductStatus(@PathVariable String id) {
         return ResponseEntity.ok(new APIResponse(MessageResponse.UPDATED_SUCCESSFULLY,
                 productService.toggleProductStatus(id)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/feature")
     public ResponseEntity<APIResponse> addFeaturedProduct(@RequestBody @Valid CreateFeaturedProduct request) {
         productService.addFeaturedProduct(request);
         return ResponseEntity.ok(new APIResponse(MessageResponse.CREATED_SUCCESSFULLY, null));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/feature/{id}")
     public ResponseEntity<APIResponse> updateFeaturedProduct(@PathVariable String id,
                                                              @RequestBody @Valid UpdateFeaturedProduct request) {
@@ -132,19 +139,21 @@ public class ProductController {
         return ResponseEntity.ok(new APIResponse(MessageResponse.CREATED_SUCCESSFULLY, null));
     }
 
-    @GetMapping("/feature")
-    public ResponseEntity<APIResponse> getAllFeaturedProduct(@RequestParam(defaultValue = "0") int page,
-                                                         @RequestParam(defaultValue = "10") int size,
-                                                         @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                         @RequestParam(defaultValue = "asc") String sortDir) {
-        return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
-                productService.getAllFeaturedProduct(page, size, sortBy, sortDir)));
-    }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/feature/{id}")
     public ResponseEntity<APIResponse> deleteFeaturedProduct(@PathVariable String id) {
         productService.deleteFeaturedProduct(id);
         return ResponseEntity.ok(new APIResponse(MessageResponse.SUCCESS_REQUEST, null));
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @GetMapping("/feature")
+    public ResponseEntity<APIResponse> getAllFeaturedProduct(@RequestParam(defaultValue = "0") int page,
+                                                             @RequestParam(defaultValue = "10") int size,
+                                                             @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                             @RequestParam(defaultValue = "asc") String sortDir) {
+        return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
+                productService.getAllFeaturedProduct(page, size, sortBy, sortDir)));
     }
 
     @GetMapping("/feature/{id}")
