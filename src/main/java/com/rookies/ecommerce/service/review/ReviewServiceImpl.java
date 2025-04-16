@@ -36,8 +36,8 @@ public class ReviewServiceImpl implements ReviewService {
     ProductService productService;
 
     @Override
-    public void createReview(String userId, CreateReviewRequest request) {
-        User user = userService.getUserEntityById(UUID.fromString(userId));
+    public void createReview(CreateReviewRequest request) {
+        User user = userService.getUserFromToken();
         Product product = productService.getProductEntityById(request.getProductId());
         Review review = reviewMapper.toReview(request);
 
@@ -89,8 +89,8 @@ public class ReviewServiceImpl implements ReviewService {
     }
 
     @Override
-    public Page<UserReviewResponse> getReviewByUser(UUID userId, int page, int size, String sortBy, String sortDir) {
-        User user = userService.getUserEntityById(userId);
+    public Page<UserReviewResponse> getReviewByUser(int page, int size, String sortBy, String sortDir) {
+        User user = userService.getUserFromToken();
         return reviewRepository.findAllByCustomer(user.getCustomer(),
                         PageRequest.of(page, size, Sort.by(Sort.Direction.fromString(sortDir), sortBy)))
                 .map(reviewMapper::toUserReviewResponse);

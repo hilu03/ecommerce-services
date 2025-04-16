@@ -31,11 +31,13 @@ public class SecurityConfig {
 
     JwtAuthenticationFilter jwtAuthenticationFilter;
 
+    CustomAuthenticationEntryPoint authenticationEntryPoint;
+
     final String[] PUBLIC_GET_ENDPOINTS = {
             "/products",
             "/products/{id}",
-            "/feature/{id}",
-            "/feature/active",
+            "/products/feature/{id}",
+            "/products/feature/active",
             "/categories",
             "/categories/{id}",
             "/categories/slug/{slug}",
@@ -56,6 +58,9 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
                         .requestMatchers(HttpMethod.POST, PUBLIC_POST_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception ->
+                        exception.authenticationEntryPoint(authenticationEntryPoint)
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider) // 👈 dùng provider của bạn

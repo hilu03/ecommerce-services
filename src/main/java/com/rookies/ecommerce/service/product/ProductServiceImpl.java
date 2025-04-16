@@ -9,6 +9,7 @@ import com.rookies.ecommerce.dto.response.ProductDetailResponse;
 import com.rookies.ecommerce.entity.Category;
 import com.rookies.ecommerce.entity.FeaturedProduct;
 import com.rookies.ecommerce.entity.Product;
+import com.rookies.ecommerce.entity.User;
 import com.rookies.ecommerce.exception.AppException;
 import com.rookies.ecommerce.exception.ErrorCode;
 import com.rookies.ecommerce.mapper.ProductMapper;
@@ -16,6 +17,7 @@ import com.rookies.ecommerce.repository.FeaturedProductRepository;
 import com.rookies.ecommerce.repository.ProductRepository;
 import com.rookies.ecommerce.service.category.CategoryService;
 import com.rookies.ecommerce.service.upload.UploadService;
+import com.rookies.ecommerce.service.user.UserService;
 import com.rookies.ecommerce.utils.SlugUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -46,9 +48,13 @@ public class ProductServiceImpl implements ProductService {
 
     FeaturedProductRepository featuredProductRepository;
 
+    UserService userService;
+
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void createProduct(CreateUpdateProductRequest productRequest, MultipartFile imageFile) throws IOException {
+        User user = userService.getUserFromToken();
+
         Category category = categoryService.getCategoryById(productRequest.getCategoryId());
         Product product = productMapper.toProduct(productRequest);
         product.setCategory(category);
@@ -57,11 +63,17 @@ public class ProductServiceImpl implements ProductService {
         String imageUrl = uploadService.uploadFile(imageFile, "products", product.getId().toString());
         product.setImageUrl(imageUrl);
         product.setSlug(SlugUtil.createSlug(productRequest.getName()) + "-" + product.getId());
+        product.setCreatedBy(user.getId());
+        product.setModifiedBy(user.getId());
+
         productRepository.save(product);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateProduct(String id, CreateUpdateProductRequest productRequest, MultipartFile imageFile) throws IOException {
+        User user = userService.getUserFromToken();
+
         Product product = productRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         Category category = categoryService.getCategoryById(productRequest.getCategoryId());
@@ -69,6 +81,7 @@ public class ProductServiceImpl implements ProductService {
         product.setCategory(category);
         productMapper.updateProduct(productRequest, product);
         product.setSlug(SlugUtil.createSlug(productRequest.getName()) + "-" + product.getId());
+        product.setModifiedBy(user.getId());
 
         if (imageFile != null) {
             String imageUrl = uploadService.uploadFile(imageFile, "products", product.getId().toString());
@@ -92,10 +105,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public boolean toggleProductStatus(String id) {
+        User user = userService.getUserFromToken();
         Product product = productRepository.findById(UUID.fromString(id))
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
         product.setDeleted(!product.isDeleted());
+        product.setModifiedBy(user.getId());
         productRepository.save(product);
         return product.isDeleted();
     }
@@ -119,21 +135,32 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void addFeaturedProduct(CreateFeaturedProduct request) {
+        User user = userService.getUserFromToken();
+
         Product product = productRepository.findById(request.getProductId())
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         FeaturedProduct featuredProduct = productMapper.toFeaturedProduct(request);
         featuredProduct.setProduct(product);
+        featuredProduct.setCreatedBy(user.getId());
+        featuredProduct.setModifiedBy(user.getId());
+
         featuredProductRepository.save(featuredProduct);
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateFeatureProduct(UUID id, UpdateFeaturedProduct request) {
+        User user = userService.getUserFromToken();
+
         FeaturedProduct featuredProduct = featuredProductRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PRODUCT_NOT_FOUND));
 
         productMapper.updateFeaturedProduct(request, featuredProduct);
+        featuredProduct.setModifiedBy(user.getId());
+
         featuredProductRepository.save(featuredProduct);
     }
 

@@ -41,13 +41,12 @@ public class ReviewController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<APIResponse> getReviewByUser(@RequestParam UUID userId,
-                                                           @RequestParam(defaultValue = "0") int page,
-                                                           @RequestParam(defaultValue = "10") int size,
-                                                           @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                           @RequestParam(defaultValue = "asc") String sortDir) {
+    public ResponseEntity<APIResponse> getReviewByUser(@RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "10") int size,
+                                                       @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                       @RequestParam(defaultValue = "asc") String sortDir) {
         return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
-                reviewService.getReviewByUser(userId, page, size, sortBy, sortDir)));
+                reviewService.getReviewByUser(page, size, sortBy, sortDir)));
     }
 
     @GetMapping("/product/{id}/statistic")
@@ -68,9 +67,8 @@ public class ReviewController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping()
-    public ResponseEntity<APIResponse> createReview(@RequestBody @Valid CreateReviewRequest request,
-                                                    @RequestParam String userId) {
-        reviewService.createReview(userId, request);
+    public ResponseEntity<APIResponse> createReview(@RequestBody @Valid CreateReviewRequest request) {
+        reviewService.createReview(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new APIResponse(MessageResponse.CREATED_SUCCESSFULLY, null));
     }

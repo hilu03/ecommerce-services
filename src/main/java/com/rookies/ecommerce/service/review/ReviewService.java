@@ -9,7 +9,7 @@ import java.util.UUID;
 
 public interface ReviewService {
 
-    void createReview(String userId, CreateReviewRequest request);
+    void createReview(CreateReviewRequest request);
 
     void updateReview(String reviewId, UpdateReviewRequest request);
 
@@ -21,7 +21,7 @@ public interface ReviewService {
 
     ReviewDetailResponse getReviewDetailById(UUID id);
 
-    Page<UserReviewResponse> getReviewByUser(UUID userId, int page, int size, String sortBy, String sortDir);
+    Page<UserReviewResponse> getReviewByUser(int page, int size, String sortBy, String sortDir);
 
     Page<AllReviewResponse> getAllReview(int page, int size, String sortBy, String sortDir);
 
