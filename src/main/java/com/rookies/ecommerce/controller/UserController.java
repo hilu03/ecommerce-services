@@ -20,22 +20,20 @@ public class UserController {
     UserService userService;
 
     @GetMapping("/me")
-    public ResponseEntity<APIResponse> getMyInfo(@RequestParam String id) {
+    public ResponseEntity<APIResponse> getMyInfo() {
         return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
-                userService.getMyInfo(id)));
+                userService.getMyInfo()));
     }
 
     @PutMapping("/me")
-    public ResponseEntity<APIResponse> updateUser(@RequestParam String id,
-                                                  @RequestBody UpdateUserInfo info) {
-        userService.updateProfile(id, info);
+    public ResponseEntity<APIResponse> updateUser(@RequestBody UpdateUserInfo info) {
+        userService.updateProfile(info);
         return ResponseEntity.ok(new APIResponse(MessageResponse.UPDATED_SUCCESSFULLY, null));
     }
 
     @PatchMapping("/me/change-password")
-    public ResponseEntity<APIResponse> changePassword(@RequestParam String id,
-                                                      @RequestBody ChangePasswordRequest request) {
-        userService.changePassword(id, request);
+    public ResponseEntity<APIResponse> changePassword(@RequestBody ChangePasswordRequest request) {
+        userService.changePassword(request);
         return ResponseEntity.ok(new APIResponse(MessageResponse.UPDATED_SUCCESSFULLY, null));
     }
 

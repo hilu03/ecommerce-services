@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -26,6 +27,7 @@ public class CategoryController {
                 categoryService.getActiveCategories()));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping()
     public ResponseEntity<APIResponse> createCategory(@RequestBody @Valid CreateUpdateCategoryRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED)
@@ -45,6 +47,7 @@ public class CategoryController {
                 categoryService.getCategoryBySlug(slug)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse> updateCategory(@PathVariable String id,
                                                       @RequestBody @Valid CreateUpdateCategoryRequest request) {
@@ -52,12 +55,14 @@ public class CategoryController {
                 categoryService.updateCategory(id, request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/{id}/toggle")
     public ResponseEntity<APIResponse> toggleCategory(@PathVariable String id) {
         return ResponseEntity.ok(new APIResponse(MessageResponse.UPDATED_SUCCESSFULLY,
                 categoryService.toggleCategory(id)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/deleted")
     public ResponseEntity<APIResponse> getDeletedCategories() {
         return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,

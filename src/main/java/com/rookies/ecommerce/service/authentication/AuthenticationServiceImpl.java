@@ -1,5 +1,6 @@
 package com.rookies.ecommerce.service.authentication;
 
+import com.rookies.ecommerce.dto.response.RefreshTokenResponse;
 import com.rookies.ecommerce.enums.RoleName;
 import com.rookies.ecommerce.dto.request.CreateUserRequest;
 import com.rookies.ecommerce.dto.request.LoginRequest;
@@ -11,11 +12,22 @@ import com.rookies.ecommerce.mapper.UserMapper;
 import com.rookies.ecommerce.repository.CartItemRepository;
 import com.rookies.ecommerce.repository.RoleRepository;
 import com.rookies.ecommerce.repository.UserRepository;
+import com.rookies.ecommerce.service.invalidatedtoken.InvalidatedTokenService;
+import com.rookies.ecommerce.service.jwt.JWTService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.time.Instant;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +43,16 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     PasswordEncoder passwordEncoder;
 
     CartItemRepository cartItemRepository;
+
+    AuthenticationManager authenticationManager;
+
+    JWTService jwtService;
+
+    InvalidatedTokenService invalidatedTokenService;
+
+    @Value("${security.jwt.refresh-duration}")
+    @NonFinal
+    long refreshDuration;
 
     @Override
     public void registerUser(CreateUserRequest request) {
@@ -56,25 +78,78 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public LoginResponse login(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.LOGIN_FAILED));
+        try {
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            request.getEmail(),
+                            request.getPassword()
+                    )
+            );
 
-        if (!user.isActive()) {
+            User user = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new AppException(ErrorCode.LOGIN_FAILED));
+
+            LoginResponse response = userMapper.toLoginResponse(user);
+            UserProfile userProfile = user.getUserProfile();
+            response.setFirstName(userProfile.getFirstName());
+            response.setLastName(userProfile.getLastName());
+            response.setToken(jwtService.generateToken(user));
+            response.setExpiredIn(jwtService.getExpirationTime());
+            if (user.getRole().getName().equals(RoleName.USER_ROLE.getName())) {
+                response.setCartItemCount(cartItemRepository.countByCart(user.getCustomer().getCart()));
+            }
+
+            return response;
+        }
+        catch (DisabledException ex) {
+            throw new AppException(ErrorCode.USER_DISABLED);
+        }
+        catch (BadCredentialsException ex) {
             throw new AppException(ErrorCode.LOGIN_FAILED);
         }
 
-        if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new AppException(ErrorCode.LOGIN_FAILED);
+    }
+
+    @Override
+    public void logout(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
         }
 
-        LoginResponse response = userMapper.toLoginResponse(user);
-        UserProfile userProfile = user.getUserProfile();
-        response.setFirstName(userProfile.getFirstName());
-        response.setLastName(userProfile.getLastName());
-        if (user.getRole().getName().equals(RoleName.USER_ROLE.getName())) {
-            response.setCartItemCount(cartItemRepository.countByCart(user.getCustomer().getCart()));
+        String token = authHeader.substring(7);
+        Instant expirationTime = jwtService.extractExpiration(token).toInstant();
+
+        invalidatedTokenService.invalidateToken(token, expirationTime);
+    }
+
+    @Override
+    public RefreshTokenResponse refreshToken(HttpServletRequest request) {
+        String authHeader = request.getHeader("Authorization");
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
         }
 
-        return response;
+        String token = authHeader.substring(7);
+        Instant expirationTime = jwtService.extractExpiration(token).toInstant();
+        invalidatedTokenService.invalidateToken(token, expirationTime);
+
+        Instant issuedAt = jwtService.extractIssuedAt(token).toInstant();
+
+        if (Instant.now().isAfter(issuedAt.plusMillis(refreshDuration))) {
+            throw new AppException(ErrorCode.UNAUTHORIZED_REQUEST);
+        }
+
+        String email = jwtService.extractUsername(token);
+
+        User user = userRepository.findByEmailAndIsActive(email, true)
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_REQUEST));
+
+
+        return RefreshTokenResponse.builder()
+                .token(jwtService.generateToken(user))
+                .expiredIn(jwtService.getExpirationTime())
+                .build();
+
     }
 }

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
@@ -23,6 +24,7 @@ public class ReviewController {
 
     ReviewService reviewService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping()
     public ResponseEntity<APIResponse> getAllReview(@RequestParam(defaultValue = "0") int page,
                                                     @RequestParam(defaultValue = "10") int size,
@@ -39,13 +41,12 @@ public class ReviewController {
     }
 
     @GetMapping("/user")
-    public ResponseEntity<APIResponse> getReviewByUser(@RequestParam UUID userId,
-                                                           @RequestParam(defaultValue = "0") int page,
-                                                           @RequestParam(defaultValue = "10") int size,
-                                                           @RequestParam(defaultValue = "createdAt") String sortBy,
-                                                           @RequestParam(defaultValue = "asc") String sortDir) {
+    public ResponseEntity<APIResponse> getReviewByUser(@RequestParam(defaultValue = "0") int page,
+                                                       @RequestParam(defaultValue = "10") int size,
+                                                       @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                       @RequestParam(defaultValue = "asc") String sortDir) {
         return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
-                reviewService.getReviewByUser(userId, page, size, sortBy, sortDir)));
+                reviewService.getReviewByUser(page, size, sortBy, sortDir)));
     }
 
     @GetMapping("/product/{id}/statistic")
@@ -64,14 +65,15 @@ public class ReviewController {
                 reviewService.getReviewByProductId(id, page, size, sortBy, sortDir)));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PostMapping()
-    public ResponseEntity<APIResponse> createReview(@RequestBody @Valid CreateReviewRequest request,
-                                                    @RequestParam String userId) {
-        reviewService.createReview(userId, request);
+    public ResponseEntity<APIResponse> createReview(@RequestBody @Valid CreateReviewRequest request) {
+        reviewService.createReview(request);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(new APIResponse(MessageResponse.CREATED_SUCCESSFULLY, null));
     }
 
+    @PreAuthorize("hasRole('USER')")
     @PutMapping("/{id}")
     public ResponseEntity<APIResponse> updateReview(@RequestBody @Valid UpdateReviewRequest request,
                                                     @PathVariable String id) {

@@ -16,7 +16,10 @@ public enum ErrorCode {
     INVALID_IMAGE_FILE("Invalid image file", HttpStatus.BAD_REQUEST),
     EMAIL_ALREADY_EXISTS("Email already exists", HttpStatus.BAD_REQUEST),
     LOGIN_FAILED("Login failed", HttpStatus.UNAUTHORIZED),
+    USER_DISABLED("User is disable", HttpStatus.FORBIDDEN),
     INVALID_PASSWORD("Invalid password", HttpStatus.UNAUTHORIZED),
+    INVALID_TOKEN("Invalid token", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED_REQUEST("Unauthorized request", HttpStatus.UNAUTHORIZED),
     ;
 
     ErrorCode(String message, HttpStatusCode httpStatusCode) {

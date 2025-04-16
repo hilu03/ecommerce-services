@@ -6,6 +6,7 @@ import com.rookies.ecommerce.dto.request.LoginRequest;
 import com.rookies.ecommerce.dto.response.APIResponse;
 import com.rookies.ecommerce.dto.response.LoginResponse;
 import com.rookies.ecommerce.service.authentication.AuthenticationService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,6 +37,19 @@ public class AuthenticationController {
     public ResponseEntity<APIResponse> login(@RequestBody @Valid LoginRequest request) {
         return ResponseEntity.ok(new APIResponse(MessageResponse.SUCCESS_REQUEST,
                 authenticationService.login(request)));
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<APIResponse> logout(HttpServletRequest request) {
+        authenticationService.logout(request);
+        return ResponseEntity.ok(new APIResponse(MessageResponse.SUCCESS_REQUEST, null));
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity<APIResponse> refreshToken(HttpServletRequest request) {
+
+        return ResponseEntity.ok(new APIResponse(MessageResponse.SUCCESS_REQUEST,
+                authenticationService.refreshToken(request)));
     }
 
 }

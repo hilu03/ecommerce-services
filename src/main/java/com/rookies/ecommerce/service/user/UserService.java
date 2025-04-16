@@ -10,12 +10,14 @@ import java.util.UUID;
 
 public interface UserService {
 
-    UserDTO getMyInfo(String id);
+    UserDTO getMyInfo();
 
-    void updateProfile(String id, UpdateUserInfo info);
+    void updateProfile(UpdateUserInfo info);
 
-    void changePassword(String id, ChangePasswordRequest request);
+    void changePassword(ChangePasswordRequest request);
 
     User getUserEntityById(UUID id);
+
+    User getUserFromToken();
 
 }

@@ -13,6 +13,8 @@ import com.rookies.ecommerce.service.user.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -30,17 +32,15 @@ public class UserServiceImpl implements UserService {
     PasswordEncoder passwordEncoder;
 
     @Override
-    public UserDTO getMyInfo(String id) {
-        User user = userRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
+    public UserDTO getMyInfo() {
+        User user = getUserFromToken();
 
         return userMapper.toUserDTO(user);
     }
 
     @Override
-    public void updateProfile(String id, UpdateUserInfo info) {
-        User user = userRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
+    public void updateProfile(UpdateUserInfo info) {
+        User user = getUserFromToken();
 
         userMapper.updateUserInfo(info, user);
         userMapper.updateUserProfile(info, user.getUserProfile());
@@ -48,9 +48,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public void changePassword(String id, ChangePasswordRequest request) {
-        User user = userRepository.findById(UUID.fromString(id))
-                .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
+    public void changePassword(ChangePasswordRequest request) {
+        User user = getUserFromToken();
 
         if (!passwordEncoder.matches(request.getOldPassword(), user.getPassword())) {
             throw new AppException(ErrorCode.INVALID_PASSWORD);
@@ -64,6 +63,17 @@ public class UserServiceImpl implements UserService {
     public User getUserEntityById(UUID id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
+    }
+
+    @Override
+    public User getUserFromToken() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new AppException(ErrorCode.UNAUTHORIZED_REQUEST);
+        }
+
+        return userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new AppException(ErrorCode.UNAUTHORIZED_REQUEST));
     }
 
 }
