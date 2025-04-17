@@ -4,7 +4,6 @@ import com.rookies.ecommerce.constant.MessageResponse;
 import com.rookies.ecommerce.dto.request.CreateUserRequest;
 import com.rookies.ecommerce.dto.request.LoginRequest;
 import com.rookies.ecommerce.dto.response.APIResponse;
-import com.rookies.ecommerce.dto.response.LoginResponse;
 import com.rookies.ecommerce.service.authentication.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
