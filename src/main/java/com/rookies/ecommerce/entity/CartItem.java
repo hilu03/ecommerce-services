@@ -1,6 +1,7 @@
 package com.rookies.ecommerce.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,6 +18,7 @@ import java.util.Date;
 public class CartItem extends BaseEntity {
 
     @Column
+    @Min(value = 1, message = "Quantity must be greater than 0")
     int quantity;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH,
