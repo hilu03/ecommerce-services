@@ -48,11 +48,6 @@ public class User extends BaseEntity implements UserDetails {
             cascade = CascadeType.ALL)
     Customer customer;
 
-    @PrePersist
-    protected void onCreate() {
-        this.isActive = true;
-    }
-
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority(role.getName()));

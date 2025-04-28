@@ -20,6 +20,7 @@ public enum ErrorCode {
     INVALID_PASSWORD("Invalid password", HttpStatus.UNAUTHORIZED),
     INVALID_TOKEN("Invalid token", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED_REQUEST("Unauthorized request", HttpStatus.UNAUTHORIZED),
+    ACCESS_DENIED("Denied access", HttpStatus.FORBIDDEN),
     QUANTITY_EXCEED("Not enough items in stock", HttpStatus.BAD_REQUEST)
     ;
 
