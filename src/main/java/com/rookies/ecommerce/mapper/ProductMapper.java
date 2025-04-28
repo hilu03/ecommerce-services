@@ -23,6 +23,8 @@ public interface ProductMapper {
     @Named("toProductDTO")
     ProductResponse toProductDTO(Product product);
 
+    @Mapping(source = "product.category.id", target = "categoryId")
+    @Mapping(source = "product.category.name", target = "categoryName")
     ProductDetailResponse toProductDetail(Product product);
 
     FeaturedProduct toFeaturedProduct(CreateFeaturedProduct info);

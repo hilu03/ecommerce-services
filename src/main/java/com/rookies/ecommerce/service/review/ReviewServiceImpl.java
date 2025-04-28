@@ -20,6 +20,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -51,6 +53,10 @@ public class ReviewServiceImpl implements ReviewService {
         Review review = reviewRepository.findById(UUID.fromString(reviewId))
                 .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
 
+        if (!review.getCustomer().equals(userService.getUserFromToken().getCustomer())) {
+            throw new AppException(ErrorCode.ACCESS_DENIED);
+        }
+
         reviewMapper.updateReview(request, review);
         reviewRepository.save(review);
     }
@@ -67,9 +73,19 @@ public class ReviewServiceImpl implements ReviewService {
     public ReviewStatistic getReviewStatisticByProductId(UUID id) {
         Product product = productService.getProductEntityById(id);
         long count = reviewRepository.countByProduct(product);
+        List<RatingCount> ratingCounts = new ArrayList<>();
+        for (int i = 5; i >= 1; i--) {
+            RatingCount ratingCount = RatingCount.builder()
+                    .rating(i)
+                    .count(reviewRepository.countByProductAndRating(product, i))
+                    .build();
+            ratingCount.setPercent(count != 0 ? (double) ratingCount.getCount() / count * 100 : 0);
+            ratingCounts.add(ratingCount);
+        }
         return ReviewStatistic.builder()
                 .count(count)
                 .averageRating(count != 0 ? reviewRepository.getAvgRatingByProduct(product) : 0)
+                .ratingCounts(ratingCounts)
                 .build();
     }
 
