@@ -5,7 +5,6 @@ import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
 
 @Entity
 @Table(name = "cart_items")

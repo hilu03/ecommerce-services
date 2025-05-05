@@ -21,10 +21,6 @@ public class UpdateUserInfo {
     @NotBlank(message = "Last name cannot be blank")
     String lastName;
 
-    @NotNull(message = "Email cannot be null")
-    @Email(message = "Email is not valid")
-    String email;
-
     String phoneNumber;
 
     String address;

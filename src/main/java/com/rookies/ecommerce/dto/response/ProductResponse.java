@@ -24,4 +24,8 @@ public class ProductResponse {
 
     String slug;
 
+    boolean deleted;
+
+    String categoryName;
+
 }

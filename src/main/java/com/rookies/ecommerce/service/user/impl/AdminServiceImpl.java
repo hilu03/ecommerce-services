@@ -40,8 +40,8 @@ public class AdminServiceImpl implements AdminService {
     }
 
     @Override
-    public void toggleUserStatus(String id, boolean status) {
-        User user = userRepository.findById(UUID.fromString(id))
+    public void toggleUserStatus(String email) {
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.RESOURCE_NOT_FOUND));
 
         user.setActive(!user.isActive());

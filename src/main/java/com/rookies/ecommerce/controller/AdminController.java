@@ -62,17 +62,15 @@ public class AdminController {
     }
 
     /**
-     * Toggles the active status of a user.
+     * Toggles the active status of a user based on their email.
      *
-     * @param id the unique identifier of the user
-     * @param status the new status to set for the user (true for active, false for inactive)
+     * @param email the email of the user whose status is to be toggled
      * @return a {@link ResponseEntity} containing an {@link APIResponse} indicating the update status
      */
     @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/toggle-status")
-    public ResponseEntity<APIResponse> toggleUserStatus(@RequestParam String id,
-                                                        @RequestParam boolean status) {
-        adminService.toggleUserStatus(id, status);
+    public ResponseEntity<APIResponse> toggleUserStatus(@RequestParam String email) {
+        adminService.toggleUserStatus(email);
         return ResponseEntity.ok(new APIResponse(MessageResponse.UPDATED_SUCCESSFULLY, null));
     }
 

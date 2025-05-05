@@ -26,6 +26,7 @@ import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
 
@@ -55,6 +56,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     long refreshDuration;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void registerUser(CreateUserRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);

@@ -44,6 +44,14 @@ public class GlobalExceptionHandler {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(new APIResponse(ErrorCode.EMAIL_ALREADY_EXISTS.getMessage(), null));
         }
+        else if (exception.getMessage().contains("reviews")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new APIResponse(ErrorCode.ALREADY_REVIEWD.getMessage(), null));
+        }
+        else if (exception.getMessage().contains("categories")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(new APIResponse(ErrorCode.CATEGORY_NAME_EXISTED.getMessage(), null));
+        }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new APIResponse("Invalid request data!", null));
     }
