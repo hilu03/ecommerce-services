@@ -3,14 +3,14 @@ package com.rookies.ecommerce.dto.response;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.math.BigDecimal;
+import java.time.Instant;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class ProductDetailResponse {
+public class ProductDetailForAdmin {
 
     String id;
 
@@ -22,12 +22,16 @@ public class ProductDetailResponse {
 
     int availableQuantity;
 
-    BigDecimal price;
-
-    String categoryId;
+    double price;
 
     String categoryName;
 
-    String slug;
+    Instant createdAt;
+
+    Instant updatedAt;
+
+    String createdBy;
+
+    String modifiedBy;
 
 }

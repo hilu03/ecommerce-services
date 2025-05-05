@@ -23,9 +23,8 @@ public interface AdminService {
     /**
      * Toggles the active status of a user.
      *
-     * @param id the unique identifier of the user
-     * @param status the new status to set for the user (true for active, false for inactive)
+     * @param email the email of the user whose status is to be toggled
      */
-    void toggleUserStatus(String id, boolean status);
+    void toggleUserStatus(String email);
 
 }

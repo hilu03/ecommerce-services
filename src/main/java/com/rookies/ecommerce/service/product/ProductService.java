@@ -4,6 +4,7 @@ import com.rookies.ecommerce.dto.request.CreateFeaturedProduct;
 import com.rookies.ecommerce.dto.request.CreateUpdateProductRequest;
 import com.rookies.ecommerce.dto.request.UpdateFeaturedProduct;
 import com.rookies.ecommerce.dto.response.FeaturedProductResponse;
+import com.rookies.ecommerce.dto.response.ProductDetailForAdmin;
 import com.rookies.ecommerce.dto.response.ProductResponse;
 import com.rookies.ecommerce.dto.response.ProductDetailResponse;
 import com.rookies.ecommerce.entity.Product;
@@ -57,6 +58,14 @@ public interface ProductService {
      * @return a {@link ProductDetailResponse} containing the product details
      */
     ProductDetailResponse getProductById(String id);
+
+    /**
+     * Retrieves detailed information about a product for administrative purposes.
+     *
+     * @param id the unique identifier of the product
+     * @return a {@link ProductDetailForAdmin} containing detailed product information for admin use
+     */
+    ProductDetailForAdmin getProductDetailForAdmin(String id);
 
     /**
      * Toggles the active/deleted status of a product.
@@ -147,4 +156,16 @@ public interface ProductService {
      * @return the {@link Product} entity
      */
     Product getProductEntityById(UUID id);
+
+    /**
+     * Searches for products by their name.
+     *
+     * @param name the name of the product to search for
+     * @param page the page number to retrieve
+     * @param size the number of products per page
+     * @param sortBy the field to sort the products by
+     * @param sortDir the direction of sorting (asc/desc)
+     * @return a paginated list of {@link ProductResponse} objects matching the search criteria
+     */
+    Page<ProductResponse> searchByName(String name, int page, int size, String sortBy, String sortDir);
 }

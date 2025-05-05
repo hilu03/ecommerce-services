@@ -31,4 +31,8 @@ public class UserProfile extends BaseEntity {
             cascade = CascadeType.ALL)
     User user;
 
+    public String getFullName() {
+        return firstName + " " + lastName;
+    }
+
 }

@@ -43,7 +43,8 @@ public class SecurityConfig {
             "/categories/{id}",
             "/categories/slug/{slug}",
             "/reviews/product/{id}/statistic",
-            "/reviews/product/{id}"
+            "/reviews/product/{id}",
+            "/products/search"
     };
 
     final  String[] PUBLIC_POST_ENDPOINTS = {

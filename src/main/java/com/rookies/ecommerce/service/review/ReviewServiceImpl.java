@@ -15,6 +15,7 @@ import com.rookies.ecommerce.service.user.UserService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -39,13 +40,19 @@ public class ReviewServiceImpl implements ReviewService {
 
     @Override
     public void createReview(CreateReviewRequest request) {
-        User user = userService.getUserFromToken();
-        Product product = productService.getProductEntityById(request.getProductId());
-        Review review = reviewMapper.toReview(request);
+        try {
+            User user = userService.getUserFromToken();
+            Product product = productService.getProductEntityById(request.getProductId());
+            Review review = reviewMapper.toReview(request);
 
-        review.setProduct(product);
-        review.setCustomer(user.getCustomer());
-        reviewRepository.save(review);
+            review.setProduct(product);
+            review.setCustomer(user.getCustomer());
+            reviewRepository.save(review);
+        }
+        catch (DataIntegrityViolationException ex) {
+            throw new AppException(ErrorCode.ALREADY_REVIEWD);
+        }
+
     }
 
     @Override

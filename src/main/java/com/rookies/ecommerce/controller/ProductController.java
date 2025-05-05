@@ -86,6 +86,19 @@ public class ProductController {
     }
 
     /**
+     * Retrieves detailed information about a product for administrative purposes.
+     *
+     * @param id the unique identifier of the product
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the product details for admin
+     */
+    @GetMapping("/{id}/admin")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<APIResponse> getProductByIdForAdmin(@PathVariable String id) {
+        return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
+                productService.getProductDetailForAdmin(id)));
+    }
+
+    /**
      * Retrieves a product by its slug.
      *
      * @param slug the slug of the product
@@ -98,7 +111,7 @@ public class ProductController {
     }
 
     /**
-     * Retrieves a paginated list of products by category ID.
+     * Retrieves a paginated list of active products by category ID.
      *
      * @param categoryId the unique identifier of the category
      * @param page the page number to retrieve (default is 0)
@@ -108,13 +121,34 @@ public class ProductController {
      * @return a {@link ResponseEntity} containing an {@link APIResponse} with the list of products
      */
     @GetMapping("/category/{categoryId}")
-    public ResponseEntity<APIResponse> getProductsByCategoryId(@PathVariable String categoryId,
+    public ResponseEntity<APIResponse> getActiveProductsByCategoryId(@PathVariable String categoryId,
                                                                @RequestParam(defaultValue = "0") int page,
                                                                @RequestParam(defaultValue = "10") int size,
                                                                @RequestParam(defaultValue = "name") String sortBy,
                                                                @RequestParam(defaultValue = "asc") String sortDir) {
         return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
                 productService.getProductsByCategoryIdAndIsDeleted(categoryId, false, page, size, sortBy, sortDir)));
+    }
+
+    /**
+     * Retrieves a paginated list of hidden products by category ID.
+     *
+     * @param categoryId the unique identifier of the category
+     * @param page the page number to retrieve (default is 0)
+     * @param size the number of products per page (default is 10)
+     * @param sortBy the field to sort the products by (default is "name")
+     * @param sortDir the direction of sorting (asc for ascending, desc for descending; default is "asc")
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the list of products
+     */
+    @GetMapping("/category/{categoryId}/hidden")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<APIResponse> getHiddenProductsByCategoryId(@PathVariable String categoryId,
+                                                                     @RequestParam(defaultValue = "0") int page,
+                                                                     @RequestParam(defaultValue = "10") int size,
+                                                                     @RequestParam(defaultValue = "name") String sortBy,
+                                                                     @RequestParam(defaultValue = "asc") String sortDir) {
+        return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
+                productService.getProductsByCategoryIdAndIsDeleted(categoryId, true, page, size, sortBy, sortDir)));
     }
 
     /**
@@ -218,7 +252,7 @@ public class ProductController {
     public ResponseEntity<APIResponse> updateFeaturedProduct(@PathVariable String id,
                                                              @RequestBody @Valid UpdateFeaturedProduct request) {
         productService.updateFeatureProduct(UUID.fromString(id), request);
-        return ResponseEntity.ok(new APIResponse(MessageResponse.CREATED_SUCCESSFULLY, null));
+        return ResponseEntity.ok(new APIResponse(MessageResponse.UPDATED_SUCCESSFULLY, null));
     }
 
     /**
@@ -281,6 +315,26 @@ public class ProductController {
                                                                 @RequestParam(defaultValue = "asc") String sortDir) {
         return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
                 productService.getActiveFeaturedProducts(page, size, sortBy, sortDir)));
+    }
+
+    /**
+     * Searches for products by name.
+     *
+     * @param name the name of the product to search for
+     * @param page the page number to retrieve (default is 0)
+     * @param size the number of products per page (default is 10)
+     * @param sortBy the field to sort the products by (default is "createdAt")
+     * @param sortDir the direction of sorting (asc for ascending, desc for descending; default is "asc")
+     * @return a {@link ResponseEntity} containing an {@link APIResponse} with the list of matching products
+     */
+    @GetMapping("/search")
+    public ResponseEntity<APIResponse> searchByName(@RequestParam String name,
+                                                    @RequestParam(defaultValue = "0") int page,
+                                                    @RequestParam(defaultValue = "10") int size,
+                                                    @RequestParam(defaultValue = "createdAt") String sortBy,
+                                                    @RequestParam(defaultValue = "asc") String sortDir) {
+        return ResponseEntity.ok(new APIResponse(MessageResponse.RESOURCE_FOUND,
+                productService.searchByName(name, page, size, sortBy, sortDir)));
     }
 
 }

@@ -25,8 +25,7 @@ public class FeaturedProduct extends BaseEntityAudit {
     @Column
     Date endDate;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id")
     Product product;
-
 }

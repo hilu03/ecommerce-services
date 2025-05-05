@@ -4,8 +4,10 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.SuperBuilder;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,6 +16,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "products")
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@SuperBuilder
 public class Product extends BaseEntityAudit {
 
     @Column(nullable = false)
@@ -44,9 +47,12 @@ public class Product extends BaseEntityAudit {
     @JoinColumn(name = "category_id")
     Category category;
 
-    @OneToOne(mappedBy = "product",
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL)
-    FeaturedProduct featuredProduct;
+    @OneToMany(mappedBy = "product",
+            cascade = {CascadeType.PERSIST, CascadeType.DETACH,
+                    CascadeType.MERGE, CascadeType.REFRESH},
+            fetch = FetchType.LAZY)
+    List<Review> reviews;
 
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    List<FeaturedProduct> featuredProducts;
 }
